@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.26.0)
 project(TorchDemo)
 
 set(CMAKE_CXX_STANDARD 14)
 set(Torch_DIR ~/libtorch/share/cmake/Torch)
-set(OpenCV_DIR ~/opencv-3.4.4/build)
+set(OpenCV_DIR ~/opencv-4.7.0/build)
 
 find_package(Torch REQUIRED)
 find_package(OpenCV REQUIRED)

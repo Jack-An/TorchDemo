@@ -5,25 +5,25 @@ from PIL import Image
 from time import time
 import numpy as np
 
-# 加载预训练模型
+# Load the pretrained model
 model = torchvision.models.resnet18(pretrained=True)
-model.eval()  # 评估模式
+model.eval()  # evaluation mode
 
-# 生成一个随机Tensor,Pytorch是基于动态图的框架，需要必须先计算一次前向传播
+# Generate a random Tensor, Pytorch is a framework based on dynamic graphs, it is necessary to calculate a forward propagation first
 example = torch.rand(1, 3, 224, 224)
 
-# 使用torch.jit.trace生成一个torch.jit.ScriptModule
+# Use torch.jit.trace to generate a torch.jit.ScriptModule
 traced_script_module = torch.jit.trace(model, example)
-traced_script_module.save("model.pt")  # 保存模型
+traced_script_module.save("model.pt")  # save model
 
-# 计算一次前向传播所需要的时间
+#Calculate the time required for a forward pass
 batch = torch.rand(64, 3, 224, 224)
 start = time()
 output = traced_script_module(batch)
 stop = time()
 print(str(stop - start) + "s")
 
-# 读取本地的照片
+# read local photos
 image = Image.open('dog.png').convert('RGB')
 default_transform = transforms.Compose([
     transforms.Resize([224, 224]),
@@ -33,15 +33,16 @@ default_transform = transforms.Compose([
 ])
 image = default_transform(image)
 
-# 前向传播
+# forward propagation
 output = traced_script_module(image.unsqueeze(0))
 # print(output[0, :10])
 
-# 预测打印Top-5
-labels = np.loadtxt('synset_words.txt', dtype=str, delimiter='\n')
+# Predicted printing Top-5
+labels = np.loadtxt('synset_words.txt', dtype=str, delimiter='|')
 
 data_out = output[0].data.numpy()
 sorted_idxs = np.argsort(-data_out)
 
 for i, idx in enumerate(sorted_idxs[:5]):
     print(f"label: {labels[idx]}, score: {data_out[idx]}")
+
